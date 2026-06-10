@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Стеше — два приглашения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;1,400;1,600&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0a14;
+    --ink:#f3eee4;
+    --gold:#d8b46a;
+    --rose:#e98fa4;
+    --violet:#8f7ae6;
+    --muted:rgba(243,238,228,.55);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--rose);color:#0b0a14}
+
+  /* ---------- progress bar ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold),var(--rose),var(--violet));
+    z-index:100;transition:width .1s linear;
+    box-shadow:0 0 12px rgba(232,143,164,.6);
+  }
+
+  /* ---------- floating background ---------- */
+  #sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .star{
+    position:absolute;border-radius:50%;
+    background:#fff;opacity:.6;
+    animation:twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.8;transform:scale(1.4)}}
+
+  .float-heart{
+    position:fixed;bottom:-40px;z-index:1;pointer-events:none;
+    animation:rise linear forwards;
+    filter:drop-shadow(0 0 6px rgba(233,143,164,.5));
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) rotate(0deg);opacity:0}
+    10%{opacity:.9}
+    100%{transform:translateY(-110vh) rotate(40deg);opacity:0}
+  }
+
+  section{
+    position:relative;z-index:2;
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:14vh 24px;
+    text-align:center;
+  }
+
+  h1,h2,.serif{font-family:'Cormorant',serif}
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{opacity:0;transform:translateY(50px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .reveal.d1{transition-delay:.15s}
+  .reveal.d2{transition-delay:.3s}
+  .reveal.d3{transition-delay:.45s}
+  .reveal.d4{transition-delay:.6s}
+
+  /* ---------- HERO ---------- */
+  #hero h1{
+    font-size:clamp(3rem,10vw,7.5rem);
+    font-weight:600;line-height:1.05;
+    background:linear-gradient(120deg,#fff 20%,var(--gold) 50%,var(--rose) 80%);
+    background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shine 5s linear infinite;
+  }
+  @keyframes shine{to{background-position:200% center}}
+  #hero .pre{
+    letter-spacing:.45em;text-transform:uppercase;
+    font-size:.8rem;color:var(--muted);margin-bottom:28px;
+  }
+  #hero .sub{
+    margin-top:30px;font-size:clamp(1.05rem,2.4vw,1.4rem);
+    color:var(--muted);max-width:560px;line-height:1.7;
+    font-family:'Cormorant',serif;font-style:italic;font-size:1.5rem;
+  }
+  .scroll-hint{
+    position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    color:var(--muted);font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;
+  }
+  .scroll-hint .mouse{
+    width:26px;height:42px;border:1.5px solid var(--muted);border-radius:14px;position:relative;
+  }
+  .scroll-hint .mouse::after{
+    content:'';position:absolute;left:50%;top:8px;width:3px;height:8px;border-radius:3px;
+    background:var(--gold);transform:translateX(-50%);
+    animation:wheel 1.6s infinite ease-in-out;
+  }
+  @keyframes wheel{0%{opacity:1;top:8px}70%{opacity:0;top:22px}100%{opacity:0;top:8px}}
+
+  /* ---------- intro ---------- */
+  #intro p{
+    max-width:640px;font-size:clamp(1.15rem,2.6vw,1.6rem);
+    line-height:1.9;font-family:'Cormorant',serif;
+  }
+  #intro .num{
+    font-size:clamp(5rem,14vw,9rem);font-family:'Cormorant',serif;
+    color:transparent;-webkit-text-stroke:1.5px var(--gold);
+    line-height:1;margin-bottom:24px;
+  }
+
+  /* ---------- date cards ---------- */
+  .date-tag{
+    letter-spacing:.4em;text-transform:uppercase;font-size:.75rem;
+    color:var(--gold);margin-bottom:20px;
+  }
+  .date-title{
+    font-size:clamp(2.4rem,7vw,5rem);font-weight:600;line-height:1.1;
+  }
+  .date-quote{
+    margin-top:26px;max-width:560px;font-family:'Cormorant',serif;font-style:italic;
+    font-size:clamp(1.1rem,2.4vw,1.45rem);line-height:1.8;color:var(--muted);
+  }
+  .card{
+    margin-top:48px;padding:34px 44px;border-radius:24px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(12px);
+    display:flex;gap:36px;flex-wrap:wrap;justify-content:center;
+    box-shadow:0 30px 60px rgba(0,0,0,.4);
+  }
+  .card .cell{min-width:120px}
+  .card .label{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .card .value{font-family:'Cormorant',serif;font-size:1.5rem}
+
+  /* --- Za Kryshey section --- */
+  #date1{background:linear-gradient(180deg,transparent,rgba(216,180,106,.05) 50%,transparent)}
+  #date1 .date-title em{color:var(--gold);font-style:italic}
+  .skyline{
+    position:absolute;bottom:0;left:0;width:100%;height:180px;opacity:.35;pointer-events:none;
+    background:
+      linear-gradient(transparent 0%, var(--bg) 100%),
+      repeating-linear-gradient(90deg,
+        rgba(216,180,106,.25) 0 26px, transparent 26px 40px,
+        rgba(216,180,106,.18) 40px 90px, transparent 90px 110px);
+    mask:linear-gradient(0deg,#000 60%,transparent);
+    -webkit-mask:linear-gradient(0deg,#000 60%,transparent);
+  }
+  .moon{
+    position:absolute;top:12vh;right:10vw;width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff8e6,#e9cf96 60%,#caa75e);
+    box-shadow:0 0 60px 20px rgba(233,207,150,.25);
+    animation:moonfloat 7s ease-in-out infinite;
+  }
+  @keyframes moonfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+
+  /* --- White Rabbit section --- */
+  #date2{background:linear-gradient(180deg,transparent,rgba(143,122,230,.07) 50%,transparent)}
+  #date2 .date-title em{color:var(--violet);font-style:italic}
+  #date2 .date-tag{color:var(--violet)}
+  .rabbit{
+    font-size:clamp(3.4rem,8vw,5.5rem);display:inline-block;
+    animation:hop 2.2s ease-in-out infinite;
+    filter:drop-shadow(0 14px 18px rgba(0,0,0,.5));
+  }
+  @keyframes hop{
+    0%,100%{transform:translateY(0) rotate(0)}
+    30%{transform:translateY(-26px) rotate(-8deg)}
+    50%{transform:translateY(0) rotate(0)}
+    65%{transform:translateY(-10px) rotate(5deg)}
+    80%{transform:translateY(0)}
+  }
+  .clock{
+    position:absolute;font-size:2rem;opacity:.25;pointer-events:none;
+    animation:spinfloat 12s linear infinite;
+  }
+  @keyframes spinfloat{
+    0%{transform:translateY(0) rotate(0)}
+    50%{transform:translateY(-40px) rotate(180deg)}
+    100%{transform:translateY(0) rotate(360deg)}
+  }
+
+  /* ---------- finale ---------- */
+  #finale h2{font-size:clamp(2.2rem,6.5vw,4.5rem);font-weight:600;line-height:1.2}
+  #finale .heart-big{
+    font-size:4.5rem;margin-bottom:24px;display:inline-block;
+    animation:beat 1.4s ease-in-out infinite;
+  }
+  @keyframes beat{
+    0%,100%{transform:scale(1)}
+    25%{transform:scale(1.18)}
+    40%{transform:scale(1)}
+    55%{transform:scale(1.12)}
+  }
+  .btns{margin-top:48px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+  .btn{
+    font-family:'Manrope',sans-serif;font-weight:600;font-size:1rem;
+    padding:18px 44px;border-radius:60px;border:none;cursor:pointer;
+    transition:transform .25s ease,box-shadow .25s ease;
+  }
+  .btn:hover{transform:translateY(-4px) scale(1.04)}
+  .btn-yes{
+    background:linear-gradient(120deg,var(--gold),var(--rose));color:#1a0f14;
+    box-shadow:0 14px 36px rgba(233,143,164,.35);
+  }
+  .btn-yes2{
+    background:transparent;color:var(--ink);
+    border:1.5px solid rgba(243,238,228,.4);
+  }
+  .btn-yes2:hover{border-color:var(--rose);color:var(--rose)}
+  #answer{
+    margin-top:36px;font-family:'Cormorant',serif;font-style:italic;
+    font-size:1.6rem;color:var(--rose);opacity:0;transform:translateY(16px);
+    transition:opacity .8s ease,transform .8s ease;min-height:2.2em;
+  }
+  #answer.show{opacity:1;transform:translateY(0)}
+  .signature{
+    margin-top:70px;color:var(--muted);font-family:'Cormorant',serif;
+    font-style:italic;font-size:1.3rem;letter-spacing:.05em;
+  }
+
+  /* confetti */
+  .confetti{
+    position:fixed;top:-20px;z-index:50;pointer-events:none;
+    animation:confallin linear forwards;
+  }
+  @keyframes confallin{
+    0%{transform:translateY(0) rotate(0)}
+    100%{transform:translateY(110vh) rotate(720deg)}
+  }
+
+  .divider{
+    width:1px;height:120px;margin:0 auto;
+    background:linear-gradient(180deg,transparent,var(--gold),transparent);
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="sky"></div>
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <p class="pre reveal">приглашение · только для одной</p>
+  <h1 class="reveal d1">Стеша</h1>
+  <p class="sub reveal d2">у меня для тебя два сюрприза.<br>один — над городом, второй — в кроличьей норе.<br>листай вниз, не торопись…</p>
+  <div class="scroll-hint">
+    <div class="mouse"></div>
+    <span>вниз</span>
+  </div>
+</section>
+
+<!-- ================= INTRO ================= -->
+<section id="intro">
+  <div class="num reveal">2</div>
+  <p class="reveal d1">
+    Не одно свидание, а целых два.<br>
+    Потому что одного вечера с тобой мне всегда мало.
+  </p>
+</section>
+
+<!-- ================= DATE 1 — ZA KRYSHEY ================= -->
+<section id="date1">
+  <div class="moon"></div>
+  <p class="date-tag reveal">свидание № 1</p>
+  <h2 class="date-title reveal d1">Все прячут счастье под крышей.<br>А мы найдём его — <em>За Крышей</em></h2>
+  <p class="date-quote reveal d2">
+    Над городом, где шум остаётся где-то внизу,
+    а наверху — только небо, ужин и ты.
+    Выше нас будут только звёзды.
+  </p>
+  <div class="card reveal d3">
+    <div class="cell"><div class="label">место</div><div class="value">За Крышей</div></div>
+    <div class="cell"><div class="label">высота</div><div class="value">над всем городом</div></div>
+    <div class="cell"><div class="label">дресс-код</div><div class="value">твоя улыбка</div></div>
+  </div>
+  <div class="skyline"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= DATE 2 — WHITE RABBIT ================= -->
+<section id="date2">
+  <span class="clock" style="top:18%;left:12%">🕰️</span>
+  <span class="clock" style="top:30%;right:14%;animation-delay:-4s">⏳</span>
+  <span class="clock" style="bottom:22%;left:20%;animation-delay:-8s">🗝️</span>
+  <div class="rabbit reveal">🐇</div>
+  <p class="date-tag reveal d1">свидание № 2</p>
+  <h2 class="date-title reveal d2">Следуй за белым кроликом,<br>Стеша. <em>White Rabbit</em> ждёт</h2>
+  <p class="date-quote reveal d3">
+    Как Алиса — в страну чудес, только наша нора ведёт
+    под стеклянный купол с видом на Москву.
+    Обещаю: опаздывать, как тот кролик, не будем.
+    «Съешь меня» и «выпей меня» — берём всё.
+  </p>
+  <div class="card reveal d4">
+    <div class="cell"><div class="label">место</div><div class="value">White Rabbit</div></div>
+    <div class="cell"><div class="label">этаж</div><div class="value">16, под куполом</div></div>
+    <div class="cell"><div class="label">настроение</div><div class="value">страна чудес</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= FINALE ================= -->
+<section id="finale">
+  <span class="heart-big reveal">❤️</span>
+  <h2 class="reveal d1">Ну что, Стеша,<br>ты со мной?</h2>
+  <div class="btns reveal d2">
+    <button class="btn btn-yes" onclick="sayYes('Это «да»! Готовь платье — увидимся за крышей и в стране чудес 🥂')">Да!</button>
+    <button class="btn btn-yes2" onclick="sayYes('Так и знал, что других вариантов нет 😏 До встречи, чудо')">Конечно да</button>
+  </div>
+  <p id="answer"></p>
+  <p class="signature reveal d3">— твой Герман</p>
+</section>
+
+<script>
+  /* ---------- progress bar ---------- */
+  const bar = document.getElementById('progress');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  });
+
+  /* ---------- stars ---------- */
+  const sky = document.getElementById('sky');
+  for (let i = 0; i < 90; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.2 + .5;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*4}s`;
+    sky.appendChild(s);
+  }
+
+  /* ---------- floating hearts ---------- */
+  const heartChars = ['💛','🤍','💜','❤️','✨'];
+  function spawnHeart() {
+    const el = document.createElement('div');
+    el.className = 'float-heart';
+    el.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    const dur = 9 + Math.random()*8;
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${12+Math.random()*22}px;animation-duration:${dur}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), dur*1000);
+  }
+  setInterval(spawnHeart, 1300);
+  for (let i = 0; i < 5; i++) setTimeout(spawnHeart, i*400);
+
+  /* ---------- reveal on scroll ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: .2 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ---------- yes! ---------- */
+  let answered = false;
+  function sayYes(text) {
+    const a = document.getElementById('answer');
+    a.textContent = text;
+    a.classList.add('show');
+    if (!answered) { answered = true; confettiBurst(); }
+    else confettiBurst();
+  }
+  function confettiBurst() {
+    const colors = ['#d8b46a','#e98fa4','#8f7ae6','#f3eee4','#ff6b8a'];
+    for (let i = 0; i < 120; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const size = 6 + Math.random()*8;
+      c.style.cssText = `
+        left:${Math.random()*100}vw;
+        width:${size}px;height:${size*0.45}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        animation-duration:${2.5+Math.random()*2.5}s;
+        animation-delay:${Math.random()*0.8}s`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 6000);
+    }
+  }
+</script>
+</body>
+</html>
