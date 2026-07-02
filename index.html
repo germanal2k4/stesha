@@ -3,391 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Стеше — два приглашения</title>
+<title>Стеша, 19 июля</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;1,400;1,600&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+>
 <style>
-  :root{
-    --bg:#0b0a14;
-    --ink:#f3eee4;
-    --gold:#d8b46a;
-    --rose:#e98fa4;
-    --violet:#8f7ae6;
-    --muted:rgba(243,238,228,.55);
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Manrope',sans-serif;
-    overflow-x:hidden;
-  }
-  ::selection{background:var(--rose);color:#0b0a14}
-
-  /* ---------- progress bar ---------- */
-  #progress{
-    position:fixed;top:0;left:0;height:3px;width:0%;
-    background:linear-gradient(90deg,var(--gold),var(--rose),var(--violet));
-    z-index:100;transition:width .1s linear;
-    box-shadow:0 0 12px rgba(232,143,164,.6);
+  :root {
+    --bg: #0f1118;
+    --bg-soft: #161a24;
+    --card: rgba(255, 255, 255, 0.05);
+    --line: rgba(255, 255, 255, 0.16);
+    --text: #f4efe6;
+    --muted: rgba(244, 239, 230, 0.68);
+    --accent: #d8b171;
+    --accent-soft: #f3c68d;
   }
 
-  /* ---------- floating background ---------- */
-  #sky{position:fixed;inset:0;z-index:0;pointer-events:none}
-  .star{
-    position:absolute;border-radius:50%;
-    background:#fff;opacity:.6;
-    animation:twinkle 3s infinite ease-in-out;
-  }
-  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.8;transform:scale(1.4)}}
-
-  .float-heart{
-    position:fixed;bottom:-40px;z-index:1;pointer-events:none;
-    animation:rise linear forwards;
-    filter:drop-shadow(0 0 6px rgba(233,143,164,.5));
-  }
-  @keyframes rise{
-    0%{transform:translateY(0) rotate(0deg);opacity:0}
-    10%{opacity:.9}
-    100%{transform:translateY(-110vh) rotate(40deg);opacity:0}
-  }
-
-  section{
-    position:relative;z-index:2;
-    min-height:100vh;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    padding:14vh 24px;
-    text-align:center;
-  }
-
-  h1,h2,.serif{font-family:'Cormorant',serif}
-
-  /* ---------- reveal on scroll ---------- */
-  .reveal{opacity:0;transform:translateY(50px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
-  .reveal.visible{opacity:1;transform:translateY(0)}
-  .reveal.d1{transition-delay:.15s}
-  .reveal.d2{transition-delay:.3s}
-  .reveal.d3{transition-delay:.45s}
-  .reveal.d4{transition-delay:.6s}
-
-  /* ---------- HERO ---------- */
-  #hero h1{
-    font-size:clamp(3rem,10vw,7.5rem);
-    font-weight:600;line-height:1.05;
-    background:linear-gradient(120deg,#fff 20%,var(--gold) 50%,var(--rose) 80%);
-    background-size:200% auto;
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
-    animation:shine 5s linear infinite;
-  }
-  @keyframes shine{to{background-position:200% center}}
-  #hero .pre{
-    letter-spacing:.45em;text-transform:uppercase;
-    font-size:.8rem;color:var(--muted);margin-bottom:28px;
-  }
-  #hero .sub{
-    margin-top:30px;font-size:clamp(1.05rem,2.4vw,1.4rem);
-    color:var(--muted);max-width:560px;line-height:1.7;
-    font-family:'Cormorant',serif;font-style:italic;font-size:1.5rem;
-  }
-  .scroll-hint{
-    position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    color:var(--muted);font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;
-  }
-  .scroll-hint .mouse{
-    width:26px;height:42px;border:1.5px solid var(--muted);border-radius:14px;position:relative;
-  }
-  .scroll-hint .mouse::after{
-    content:'';position:absolute;left:50%;top:8px;width:3px;height:8px;border-radius:3px;
-    background:var(--gold);transform:translateX(-50%);
-    animation:wheel 1.6s infinite ease-in-out;
-  }
-  @keyframes wheel{0%{opacity:1;top:8px}70%{opacity:0;top:22px}100%{opacity:0;top:8px}}
-
-  /* ---------- intro ---------- */
-  #intro p{
-    max-width:640px;font-size:clamp(1.15rem,2.6vw,1.6rem);
-    line-height:1.9;font-family:'Cormorant',serif;
-  }
-  #intro .num{
-    font-size:clamp(5rem,14vw,9rem);font-family:'Cormorant',serif;
-    color:transparent;-webkit-text-stroke:1.5px var(--gold);
-    line-height:1;margin-bottom:24px;
-  }
-
-  /* ---------- date cards ---------- */
-  .date-tag{
-    letter-spacing:.4em;text-transform:uppercase;font-size:.75rem;
-    color:var(--gold);margin-bottom:20px;
-  }
-  .date-title{
-    font-size:clamp(2.4rem,7vw,5rem);font-weight:600;line-height:1.1;
-  }
-  .date-quote{
-    margin-top:26px;max-width:560px;font-family:'Cormorant',serif;font-style:italic;
-    font-size:clamp(1.1rem,2.4vw,1.45rem);line-height:1.8;color:var(--muted);
-  }
-  .card{
-    margin-top:48px;padding:34px 44px;border-radius:24px;
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.1);
-    backdrop-filter:blur(12px);
-    display:flex;gap:36px;flex-wrap:wrap;justify-content:center;
-    box-shadow:0 30px 60px rgba(0,0,0,.4);
-  }
-  .card .cell{min-width:120px}
-  .card .label{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-  .card .value{font-family:'Cormorant',serif;font-size:1.5rem}
-
-  /* --- Za Kryshey section --- */
-  #date1{background:linear-gradient(180deg,transparent,rgba(216,180,106,.05) 50%,transparent)}
-  #date1 .date-title em{color:var(--gold);font-style:italic}
-  .skyline{
-    position:absolute;bottom:0;left:0;width:100%;height:180px;opacity:.35;pointer-events:none;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Inter", sans-serif;
     background:
-      linear-gradient(transparent 0%, var(--bg) 100%),
-      repeating-linear-gradient(90deg,
-        rgba(216,180,106,.25) 0 26px, transparent 26px 40px,
-        rgba(216,180,106,.18) 40px 90px, transparent 90px 110px);
-    mask:linear-gradient(0deg,#000 60%,transparent);
-    -webkit-mask:linear-gradient(0deg,#000 60%,transparent);
-  }
-  .moon{
-    position:absolute;top:12vh;right:10vw;width:90px;height:90px;border-radius:50%;
-    background:radial-gradient(circle at 35% 35%,#fff8e6,#e9cf96 60%,#caa75e);
-    box-shadow:0 0 60px 20px rgba(233,207,150,.25);
-    animation:moonfloat 7s ease-in-out infinite;
-  }
-  @keyframes moonfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
-
-  /* --- White Rabbit section --- */
-  #date2{background:linear-gradient(180deg,transparent,rgba(143,122,230,.07) 50%,transparent)}
-  #date2 .date-title em{color:var(--violet);font-style:italic}
-  #date2 .date-tag{color:var(--violet)}
-  .rabbit{
-    font-size:clamp(3.4rem,8vw,5.5rem);display:inline-block;
-    animation:hop 2.2s ease-in-out infinite;
-    filter:drop-shadow(0 14px 18px rgba(0,0,0,.5));
-  }
-  @keyframes hop{
-    0%,100%{transform:translateY(0) rotate(0)}
-    30%{transform:translateY(-26px) rotate(-8deg)}
-    50%{transform:translateY(0) rotate(0)}
-    65%{transform:translateY(-10px) rotate(5deg)}
-    80%{transform:translateY(0)}
-  }
-  .clock{
-    position:absolute;font-size:2rem;opacity:.25;pointer-events:none;
-    animation:spinfloat 12s linear infinite;
-  }
-  @keyframes spinfloat{
-    0%{transform:translateY(0) rotate(0)}
-    50%{transform:translateY(-40px) rotate(180deg)}
-    100%{transform:translateY(0) rotate(360deg)}
+      radial-gradient(circle at 10% 0%, rgba(141, 111, 71, 0.3), transparent 34%),
+      radial-gradient(circle at 85% 15%, rgba(98, 122, 168, 0.2), transparent 38%),
+      linear-gradient(180deg, #12141d 0%, #0f1118 35%, #0d1016 100%);
+    color: var(--text);
+    overflow-x: hidden;
   }
 
-  /* ---------- finale ---------- */
-  #finale h2{font-size:clamp(2.2rem,6.5vw,4.5rem);font-weight:600;line-height:1.2}
-  #finale .heart-big{
-    font-size:4.5rem;margin-bottom:24px;display:inline-block;
-    animation:beat 1.4s ease-in-out infinite;
-  }
-  @keyframes beat{
-    0%,100%{transform:scale(1)}
-    25%{transform:scale(1.18)}
-    40%{transform:scale(1)}
-    55%{transform:scale(1.12)}
-  }
-  .btns{margin-top:48px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-  .btn{
-    font-family:'Manrope',sans-serif;font-weight:600;font-size:1rem;
-    padding:18px 44px;border-radius:60px;border:none;cursor:pointer;
-    transition:transform .25s ease,box-shadow .25s ease;
-  }
-  .btn:hover{transform:translateY(-4px) scale(1.04)}
-  .btn-yes{
-    background:linear-gradient(120deg,var(--gold),var(--rose));color:#1a0f14;
-    box-shadow:0 14px 36px rgba(233,143,164,.35);
-  }
-  .btn-yes2{
-    background:transparent;color:var(--ink);
-    border:1.5px solid rgba(243,238,228,.4);
-  }
-  .btn-yes2:hover{border-color:var(--rose);color:var(--rose)}
-  #answer{
-    margin-top:36px;font-family:'Cormorant',serif;font-style:italic;
-    font-size:1.6rem;color:var(--rose);opacity:0;transform:translateY(16px);
-    transition:opacity .8s ease,transform .8s ease;min-height:2.2em;
-  }
-  #answer.show{opacity:1;transform:translateY(0)}
-  .signature{
-    margin-top:70px;color:var(--muted);font-family:'Cormorant',serif;
-    font-style:italic;font-size:1.3rem;letter-spacing:.05em;
+  #progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    z-index: 200;
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+    box-shadow: 0 0 16px rgba(216, 177, 113, 0.45);
   }
 
-  /* confetti */
-  .confetti{
-    position:fixed;top:-20px;z-index:50;pointer-events:none;
-    animation:confallin linear forwards;
-  }
-  @keyframes confallin{
-    0%{transform:translateY(0) rotate(0)}
-    100%{transform:translateY(110vh) rotate(720deg)}
+  .grain {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.15;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0.6px, transparent 0.7px);
+    background-size: 3px 3px;
   }
 
-  .divider{
-    width:1px;height:120px;margin:0 auto;
-    background:linear-gradient(180deg,transparent,var(--gold),transparent);
+  main { position: relative; z-index: 2; }
+
+  section {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+    padding: 110px 28px;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 32px;
+  }
+
+  .hero-tag {
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-size: 0.76rem;
+    margin-bottom: 22px;
+  }
+
+  h1, h2, h3 {
+    font-family: "Literata", serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.9rem, 7.4vw, 6.7rem);
+    line-height: 1.02;
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    max-width: 620px;
+    color: var(--muted);
+    font-size: clamp(1rem, 2.2vw, 1.22rem);
+    line-height: 1.85;
+  }
+
+  .hero-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 26px 24px;
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-panel dl {
+    display: grid;
+    gap: 16px;
+  }
+
+  .hero-panel dt {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .hero-panel dd {
+    font-family: "Literata", serif;
+    font-size: 1.26rem;
+  }
+
+  .divider {
+    height: 1px;
+    width: min(1120px, calc(100% - 56px));
+    margin: 0 auto;
+    background: linear-gradient(90deg, transparent, rgba(216, 177, 113, 0.55), transparent);
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 34px;
+    align-items: start;
+  }
+
+  .story h2 {
+    font-size: clamp(2rem, 4.5vw, 3.6rem);
+    line-height: 1.13;
+  }
+
+  .story-copy {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .moments {
+    margin-top: 28px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .moment {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .moment .time {
+    font-weight: 600;
+    color: var(--accent-soft);
+  }
+
+  .map-section h2 {
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    margin-bottom: 12px;
+  }
+
+  .map-section p {
+    color: var(--muted);
+    max-width: 760px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  #map {
+    width: 100%;
+    height: min(56vh, 500px);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  }
+
+  .finale {
+    text-align: center;
+  }
+
+  .finale h3 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .finale p {
+    color: var(--muted);
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.85;
+  }
+
+  .actions {
+    margin-top: 34px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  button {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 14px 28px;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(120deg, var(--accent), var(--accent-soft));
+    color: #22180b;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--line);
+  }
+
+  button:hover { transform: translateY(-2px); }
+  .btn-secondary:hover { border-color: rgba(243, 198, 141, 0.65); }
+
+  #response {
+    min-height: 2.2em;
+    margin-top: 22px;
+    font-family: "Literata", serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    color: var(--accent-soft);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  #response.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .signature {
+    margin-top: 44px;
+    color: var(--muted);
+    font-family: "Literata", serif;
+    font-style: italic;
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 920px) {
+    .hero, .story {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
   }
 </style>
 </head>
 <body>
-
 <div id="progress"></div>
-<div id="sky"></div>
+<div class="grain" aria-hidden="true"></div>
 
-<!-- ================= HERO ================= -->
-<section id="hero">
-  <p class="pre reveal">приглашение · только для одной</p>
-  <h1 class="reveal d1">Стеша</h1>
-  <p class="sub reveal d2">у меня для тебя два сюрприза.<br>один — над городом, второй — в кроличьей норе.<br>листай вниз, не торопись…</p>
-  <div class="scroll-hint">
-    <div class="mouse"></div>
-    <span>вниз</span>
-  </div>
-</section>
+<main>
+  <section class="hero">
+    <div class="reveal">
+      <p class="hero-tag">личное приглашение</p>
+      <h1>Стеша,<br>19 июля<br>в Москве</h1>
+      <p>
+        Хочу пригласить тебя на вечер в ресторане "Северяне".
+        Спокойно, красиво и по-настоящему - чтобы просто быть рядом,
+        смеяться и забыть о времени.
+      </p>
+    </div>
 
-<!-- ================= INTRO ================= -->
-<section id="intro">
-  <div class="num reveal">2</div>
-  <p class="reveal d1">
-    Не одно свидание, а целых два.<br>
-    Потому что одного вечера с тобой мне всегда мало.
-  </p>
-</section>
+    <aside class="hero-panel reveal">
+      <dl>
+        <div>
+          <dt>Кому</dt>
+          <dd>Стеше</dd>
+        </div>
+        <div>
+          <dt>От кого</dt>
+          <dd>От Германа</dd>
+        </div>
+        <div>
+          <dt>Когда</dt>
+          <dd>19 июля</dd>
+        </div>
+        <div>
+          <dt>Где</dt>
+          <dd>Ресторан "Северяне"</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
 
-<!-- ================= DATE 1 — ZA KRYSHEY ================= -->
-<section id="date1">
-  <div class="moon"></div>
-  <p class="date-tag reveal">свидание № 1</p>
-  <h2 class="date-title reveal d1">Все прячут счастье под крышей.<br>А мы найдём его — <em>За Крышей</em></h2>
-  <p class="date-quote reveal d2">
-    Над городом, где шум остаётся где-то внизу,
-    а наверху — только небо, ужин и ты.
-    Выше нас будут только звёзды.
-  </p>
-  <div class="card reveal d3">
-    <div class="cell"><div class="label">место</div><div class="value">За Крышей</div></div>
-    <div class="cell"><div class="label">высота</div><div class="value">над всем городом</div></div>
-    <div class="cell"><div class="label">дресс-код</div><div class="value">твоя улыбка</div></div>
-  </div>
-  <div class="skyline"></div>
-</section>
+  <div class="divider"></div>
 
-<div class="divider"></div>
+  <section class="story">
+    <div class="reveal">
+      <h2>План вечера,<br>который хочу разделить с тобой</h2>
+    </div>
+    <div class="reveal">
+      <p class="story-copy">
+        Без спешки и без лишнего шума.
+        Начнем с прогулки, потом уютный столик в "Северянах",
+        а дальше - как захочется нам. Главное, чтобы этот вечер был нашим.
+      </p>
 
-<!-- ================= DATE 2 — WHITE RABBIT ================= -->
-<section id="date2">
-  <span class="clock" style="top:18%;left:12%">🕰️</span>
-  <span class="clock" style="top:30%;right:14%;animation-delay:-4s">⏳</span>
-  <span class="clock" style="bottom:22%;left:20%;animation-delay:-8s">🗝️</span>
-  <div class="rabbit reveal">🐇</div>
-  <p class="date-tag reveal d1">свидание № 2</p>
-  <h2 class="date-title reveal d2">Следуй за белым кроликом,<br>Стеша. <em>White Rabbit</em> ждёт</h2>
-  <p class="date-quote reveal d3">
-    Как Алиса — в страну чудес, только наша нора ведёт
-    под стеклянный купол с видом на Москву.
-    Обещаю: опаздывать, как тот кролик, не будем.
-    «Съешь меня» и «выпей меня» — берём всё.
-  </p>
-  <div class="card reveal d4">
-    <div class="cell"><div class="label">место</div><div class="value">White Rabbit</div></div>
-    <div class="cell"><div class="label">этаж</div><div class="value">16, под куполом</div></div>
-    <div class="cell"><div class="label">настроение</div><div class="value">страна чудес</div></div>
-  </div>
-</section>
+      <div class="moments">
+        <div class="moment">
+          <span class="time">19:00</span>
+          <span>Встреча и короткая прогулка перед ужином</span>
+        </div>
+        <div class="moment">
+          <span class="time">19:30</span>
+          <span>Ужин в "Северянах" и долгие разговоры</span>
+        </div>
+        <div class="moment">
+          <span class="time">после</span>
+          <span>Москва вечером и настроение, которое хочется сохранить</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<!-- ================= FINALE ================= -->
-<section id="finale">
-  <span class="heart-big reveal">❤️</span>
-  <h2 class="reveal d1">Ну что, Стеша,<br>ты со мной?</h2>
-  <div class="btns reveal d2">
-    <button class="btn btn-yes" onclick="sayYes('Это «да»! Готовь платье — увидимся за крышей и в стране чудес 🥂')">Да!</button>
-    <button class="btn btn-yes2" onclick="sayYes('Так и знал, что других вариантов нет 😏 До встречи, чудо')">Конечно да</button>
-  </div>
-  <p id="answer"></p>
-  <p class="signature reveal d3">— твой Герман</p>
-</section>
+  <section class="map-section">
+    <h2 class="reveal">Точка встречи на карте</h2>
+    <p class="reveal">
+      Чтобы было удобно, отметил место заранее.
+      Жду тебя 19 июля в ресторане "Северяне" в Москве.
+    </p>
+    <div id="map" class="reveal" role="region" aria-label="Карта с рестораном Северяне"></div>
+  </section>
 
+  <div class="divider"></div>
+
+  <section class="finale">
+    <h3 class="reveal">Пойдешь со мной<br>на это свидание?</h3>
+    <p class="reveal">
+      Хочу, чтобы это был тот вечер, о котором потом улыбаются даже спустя время.
+    </p>
+    <div class="actions reveal">
+      <button class="btn-primary" onclick="setAnswer('Да. Тогда 19 июля будет особенно красивым днем.')">Да, с удовольствием</button>
+      <button class="btn-secondary" onclick="setAnswer('Отлично, договорились. Я буду ждать тебя в Северянах.')">Конечно, иду</button>
+    </div>
+    <p id="response"></p>
+    <p class="signature reveal">- Герман</p>
+  </section>
+</main>
+
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
 <script>
-  /* ---------- progress bar ---------- */
-  const bar = document.getElementById('progress');
-  addEventListener('scroll', () => {
-    const h = document.documentElement;
-    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  const progress = document.getElementById("progress");
+  addEventListener("scroll", () => {
+    const root = document.documentElement;
+    const ratio = root.scrollTop / (root.scrollHeight - root.clientHeight);
+    progress.style.width = (ratio * 100) + "%";
   });
 
-  /* ---------- stars ---------- */
-  const sky = document.getElementById('sky');
-  for (let i = 0; i < 90; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 2.2 + .5;
-    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*4}s`;
-    sky.appendChild(s);
-  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 
-  /* ---------- floating hearts ---------- */
-  const heartChars = ['💛','🤍','💜','❤️','✨'];
-  function spawnHeart() {
-    const el = document.createElement('div');
-    el.className = 'float-heart';
-    el.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
-    const dur = 9 + Math.random()*8;
-    el.style.cssText = `left:${Math.random()*100}vw;font-size:${12+Math.random()*22}px;animation-duration:${dur}s`;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), dur*1000);
-  }
-  setInterval(spawnHeart, 1300);
-  for (let i = 0; i < 5; i++) setTimeout(spawnHeart, i*400);
+  const restaurantCoordinates = [55.7578, 37.6116];
+  const map = L.map("map", { zoomControl: true }).setView(restaurantCoordinates, 15);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+  L.marker(restaurantCoordinates)
+    .addTo(map)
+    .bindPopup("<b>Ресторан \"Северяне\"</b><br>Москва<br><i>Встречаемся здесь 19 июля</i>")
+    .openPopup();
 
-  /* ---------- reveal on scroll ---------- */
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: .2 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-  /* ---------- yes! ---------- */
-  let answered = false;
-  function sayYes(text) {
-    const a = document.getElementById('answer');
-    a.textContent = text;
-    a.classList.add('show');
-    if (!answered) { answered = true; confettiBurst(); }
-    else confettiBurst();
-  }
-  function confettiBurst() {
-    const colors = ['#d8b46a','#e98fa4','#8f7ae6','#f3eee4','#ff6b8a'];
-    for (let i = 0; i < 120; i++) {
-      const c = document.createElement('div');
-      c.className = 'confetti';
-      const size = 6 + Math.random()*8;
-      c.style.cssText = `
-        left:${Math.random()*100}vw;
-        width:${size}px;height:${size*0.45}px;
-        background:${colors[Math.floor(Math.random()*colors.length)]};
-        border-radius:${Math.random()>.5?'50%':'2px'};
-        animation-duration:${2.5+Math.random()*2.5}s;
-        animation-delay:${Math.random()*0.8}s`;
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 6000);
-    }
+  function setAnswer(text) {
+    const response = document.getElementById("response");
+    response.textContent = text;
+    response.classList.add("show");
   }
 </script>
 </body>
